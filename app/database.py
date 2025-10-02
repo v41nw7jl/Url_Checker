@@ -447,12 +447,16 @@ class DatabaseManager:
         except Exception as e:
             logger.error(f"Failed to get uptime stats for URL {url_id}: {e}")
             return {}
-    
+
+# In app/database.py, replace the existing cleanup_old_records function with this one:
+
     def cleanup_old_records(self, retention_days: Optional[int] = None) -> int:
         """Clean up old check records"""
         retention_days = retention_days or self.config.get('database.retention_days', 30)
+        deleted_count = 0
         
         try:
+            # First, delete old records within a transaction for safety
             with self.get_cursor() as cursor:
                 cutoff_date = datetime.now() - timedelta(days=retention_days)
                 
@@ -462,17 +466,23 @@ class DatabaseManager:
                 """, (cutoff_date,))
                 
                 deleted_count = cursor.rowcount
-                logger.info(f"Cleaned up {deleted_count} old check records")
-                
-                # Vacuum database to reclaim space
-                cursor.execute("VACUUM")
-                
-                return deleted_count
-                
+                if deleted_count > 0:
+                    logger.info(f"Cleaned up {deleted_count} old check records")
+            
+            # After the transaction is committed, run VACUUM on the connection
+            # We only vacuum if something was actually deleted
+            if deleted_count > 0:
+                logger.info("Vacuuming database to reclaim space...")
+                self.connection.execute("VACUUM")
+                logger.info("Database vacuum complete.")
+
+            return deleted_count
+            
         except Exception as e:
             logger.error(f"Failed to cleanup old records: {e}")
+            # Ensure we return 0 if the delete part failed
             return 0
-    
+
     def get_database_stats(self) -> Dict[str, Any]:
         """Get database statistics"""
         try:

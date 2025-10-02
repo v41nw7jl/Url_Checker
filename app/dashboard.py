@@ -1,4 +1,4 @@
-# FILE: app/dashboard.py (Updated)
+# FILE: app/dashboard.py (Corrected Version)
 
 """
 Flask Web Dashboard for URL Monitor
@@ -6,15 +6,29 @@ Provides a web interface and API to view monitoring status.
 """
 
 import json
-from flask import Flask, render_template, jsonify, url_for
+from flask import Flask, render_template, jsonify
 from datetime import datetime
 
 from app.config import get_config
 from app.database import get_database
 
+# --- CHANGE START ---
+# We need to tell Flask where to find the 'templates' and 'static' folders,
+# because they are in the project root, not inside the 'app' directory.
+import os
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+template_folder = os.path.join(project_root, 'templates')
+static_folder = os.path.join(project_root, 'static')
+# --- CHANGE END ---
+
+
 def create_app():
     """Create and configure the Flask application."""
-    app = Flask(__name__)
+    # --- CHANGE START ---
+    # Pass the correct folder paths to the Flask constructor
+    app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
+    # --- CHANGE END ---
+    
     config = get_config()
     
     class CustomJSONEncoder(json.JSONEncoder):
@@ -25,14 +39,30 @@ def create_app():
 
     app.json_encoder = CustomJSONEncoder
 
+    # This is a helper function to make dates look nice in the template
     @app.template_filter('datetimeformat')
     def format_datetime(value, format="%Y-%m-%d %H:%M:%S"):
+        """A custom Jinja filter to format datetime objects."""
         if value is None:
             return ""
+
+        # Special case to handle the string 'now' for the current time
+        if value == 'now':
+            # Use UTC time to be consistent
+            dt = datetime.utcnow()
+            return dt.strftime(format)
+
+        # Handle actual datetime objects or ISO strings from the database
+        dt = value
         if isinstance(value, str):
-            value = datetime.fromisoformat(value)
-        return value.strftime(format)
-    
+            try:
+                dt = datetime.fromisoformat(value)
+            except ValueError:
+                return value  # If it's not a valid date string, just return it as is
+
+        return dt.strftime(format)
+
+
     @app.route('/')
     def index():
         """Dashboard homepage."""
@@ -42,24 +72,12 @@ def create_app():
         stats = {
             'total': len(all_status),
             'up': sum(1 for s in all_status if s.get('is_up')),
-            'down': sum(1 for s in all_status if not s.get('is_up') and s.get('last_checked')),
-            'pending': sum(1 for s in all_status if not s.get('last_checked'))
+            'down': sum(1 for s in all_status if s.get('is_up') is False and s.get('checked_at')),
+            'pending': sum(1 for s in all_status if s.get('last_checked') is None)
         }
         
         return render_template('index.html', statuses=all_status, stats=stats)
 
-    @app.route('/history/<int:url_id>')
-    def history(url_id):
-        """Page to show detailed history for a single URL."""
-        db = get_database()
-        url_details = db.get_url(url_id)
-        if not url_details:
-            return "URL not found", 404
-        
-        check_history = db.get_url_history(url_id, days=7)
-        return render_template('history.html', url_details=url_details, history=check_history)
-
-    # --- API Routes ---
     @app.route('/api/status')
     def api_status():
         """JSON API endpoint for the status of all URLs."""
@@ -77,9 +95,7 @@ def create_app():
         
         history = db.get_url_history(url_id, days=7)
         return jsonify({
-            "url_id": url.id,
             "url": url.url,
-            "name": url.name,
             "history": history
         })
 

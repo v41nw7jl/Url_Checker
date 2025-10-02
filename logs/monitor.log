@@ -1,0 +1,227 @@
+2025-10-02 09:25:40,016 - app.database - INFO - Database initialized successfully
+2025-10-02 09:25:40,017 - __main__ - INFO - Database initialized
+2025-10-02 09:27:06,174 - app.database - INFO - Database initialized successfully
+2025-10-02 09:27:06,176 - app.database - INFO - Added URL: https://github.com (ID: 1)
+2025-10-02 09:29:10,493 - app.database - INFO - Database initialized successfully
+2025-10-02 09:29:10,495 - app.database - INFO - Added URL: https://httpstat.us/404 (ID: 2)
+2025-10-02 09:31:14,392 - app.checker - INFO - Starting URL check cycle...
+2025-10-02 09:31:14,393 - app.database - INFO - Database initialized successfully
+2025-10-02 09:31:15,803 - app.checker - INFO - URL check cycle finished. Checked 2 URLs.
+2025-10-02 09:31:15,804 - app.checker - INFO - Running automatic cleanup of records older than 30 days.
+2025-10-02 09:31:15,804 - app.database - INFO - Cleaned up 0 old check records
+2025-10-02 09:31:15,804 - app.database - ERROR - Database error: cannot VACUUM from within a transaction
+2025-10-02 09:31:15,804 - app.database - ERROR - Failed to cleanup old records: cannot VACUUM from within a transaction
+2025-10-02 09:31:15,804 - app.checker - INFO - Cleanup complete. Removed 0 old records.
+2025-10-02 09:40:36,769 - app.database - INFO - Database initialized successfully
+2025-10-02 09:43:05,099 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.0.99:8080
+2025-10-02 09:43:05,100 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-10-02 09:43:54,415 - app.database - INFO - Database initialized successfully
+2025-10-02 09:43:54,417 - app.dashboard - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/app/dashboard.py", line 49, in index
+    return render_template('index.html', statuses=all_status, stats=stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: index.html
+2025-10-02 09:43:54,420 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 09:43:54] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-10-02 09:43:55,128 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 09:43:55] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-10-02 09:51:16,933 - app.dashboard - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/app/dashboard.py", line 49, in index
+    return value.strftime(format)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: index.html
+2025-10-02 09:51:16,935 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 09:51:16] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-10-02 09:51:43,565 - app.dashboard - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/app/dashboard.py", line 49, in index
+    return value.strftime(format)
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 149, in render_template
+    template = app.jinja_env.get_or_select_template(template_name_or_list)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1087, in get_or_select_template
+    return self.get_template(template_name_or_list, parent, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1016, in get_template
+    return self._load_template(name, globals)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 975, in _load_template
+    template = self.loader.load(self, name, self.make_globals(globals))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/loaders.py", line 126, in load
+    source, filename, uptodate = self.get_source(environment, name)
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 65, in get_source
+    return self._get_source_fast(environment, template)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 99, in _get_source_fast
+    raise TemplateNotFound(template)
+jinja2.exceptions.TemplateNotFound: index.html
+2025-10-02 09:51:43,566 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 09:51:43] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-10-02 09:51:50,302 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.0.99:8080
+2025-10-02 09:51:50,302 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-10-02 09:51:54,722 - app.database - INFO - Database initialized successfully
+2025-10-02 09:51:54,734 - app.dashboard - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/app/dashboard.py", line 64, in index
+    return render_template('index.html', statuses=all_status, stats=stats)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/workspaces/Url_Checker/templates/index.html", line 2, in top-level template code
+    {% extends "base.html" %}
+  File "/workspaces/Url_Checker/templates/base.html", line 20, in top-level template code
+    <p>URL Monitor v1.0.0 | Last updated: {{ "now" | datetimeformat }} UTC</p>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/app/dashboard.py", line 48, in format_datetime
+    value = datetime.fromisoformat(value)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: Invalid isoformat string: 'now'
+2025-10-02 09:51:54,736 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 09:51:54] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-10-02 09:58:46,343 - app.dashboard - ERROR - Exception on / [GET]
+Traceback (most recent call last):
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/app/dashboard.py", line 64, in index
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 150, in render_template
+    return _render(app, template, context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/flask/templating.py", line 131, in _render
+    rv = template.render(context)
+         ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 1295, in render
+    self.environment.handle_exception()
+  File "/workspaces/Url_Checker/venv/lib/python3.12/site-packages/jinja2/environment.py", line 942, in handle_exception
+    raise rewrite_traceback_stack(source=source)
+  File "/workspaces/Url_Checker/templates/index.html", line 2, in top-level template code
+    {% extends "base.html" %}
+  File "/workspaces/Url_Checker/templates/base.html", line 20, in top-level template code
+    <p>URL Monitor v1.0.0 | Last updated: {{ "now" | datetimeformat }} UTC</p>
+    ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/workspaces/Url_Checker/app/dashboard.py", line 48, in format_datetime
+ValueError: Invalid isoformat string: 'now'
+2025-10-02 09:58:46,344 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 09:58:46] "[35m[1mGET / HTTP/1.1[0m" 500 -
+2025-10-02 09:58:57,881 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://10.0.0.99:8080
+2025-10-02 09:58:57,881 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-10-02 09:59:01,819 - app.database - INFO - Database initialized successfully
+2025-10-02 09:59:01,831 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 09:59:01] "GET / HTTP/1.1" 200 -
+2025-10-02 09:59:02,062 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 09:59:02] "GET /static/style.css HTTP/1.1" 200 -
+2025-10-02 10:22:12,353 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 10:22:12] "GET / HTTP/1.1" 200 -
+2025-10-02 10:22:12,619 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 10:22:12] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
+2025-10-02 10:22:20,617 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 10:22:20] "GET / HTTP/1.1" 200 -
+2025-10-02 10:22:20,843 - werkzeug - INFO - 127.0.0.1 - - [02/Oct/2025 10:22:20] "[36mGET /static/style.css HTTP/1.1[0m" 304 -
