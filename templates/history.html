@@ -1,0 +1,60 @@
+<!-- FILE: templates/history.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="history-header">
+    <a href="{{ url_for('index') }}">&larr; Back to Dashboard</a>
+    <h2>History for:</h2>
+    <p class="url-link"><a href="{{ url_details.url }}" target="_blank" rel="noopener noreferrer">{{ url_details.url }}</a></p>
+</div>
+
+<div class="status-table">
+    <table>
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>Checked At (UTC)</th>
+                <th>Response Time</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if history %}
+                {% for check in history %}
+                <tr class="status-row-{{ 'up' if check.is_up else 'down' }}">
+                    <td>
+                        {% if check.is_up %}
+                            <span class="status-icon status-up">✓</span> Up
+                        {% else %}
+                            <span class="status-icon status-down">✗</span> Down
+                        {% endif %}
+                    </td>
+                    <td>{{ check.checked_at | datetimeformat }}</td>
+                    <td>
+                        {% if check.response_time is not none %}
+                            {{ "%.2fms" | format(check.response_time) }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if check.error_message %}
+                            {{ check.error_message }}
+                        {% elif check.status_code %}
+                            HTTP {{ check.status_code }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="4">No check history found for this URL in the last 7 days.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

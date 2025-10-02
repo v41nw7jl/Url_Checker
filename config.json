@@ -1,0 +1,56 @@
+{
+  "application": {
+    "name": "URL Monitor",
+    "version": "1.0.0",
+    "timezone": "UTC"
+  },
+  "scheduler": {
+    "enabled": true,
+    "schedules": [
+      "06:00",
+      "14:00",
+      "20:00"
+    ],
+    "run_on_startup": false
+  },
+  "checker": {
+    "request_timeout": 10,
+    "connect_timeout": 5,
+    "read_timeout": 10,
+    "concurrent_limit": 10,
+    "retry_attempts": 2,
+    "retry_delay": 3,
+    "user_agent": "URLMonitor/1.0",
+    "verify_ssl": true,
+    "follow_redirects": true,
+    "max_redirects": 3
+  },
+  "database": {
+    "path": "data/monitor.db",
+    "retention_days": 30,
+    "auto_cleanup": true,
+    "backup_enabled": false,
+    "connection_timeout": 30
+  },
+  "dashboard": {
+    "enabled": true,
+    "host": "0.0.0.0",
+    "port": 8080,
+    "debug": false,
+    "secret_key": "dev-key-change-in-production",
+    "template_reload": false
+  },
+  "logging": {
+    "level": "INFO",
+    "file": "logs/monitor.log",
+    "max_size": "10MB",
+    "backup_count": 5,
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  },
+  "performance": {
+    "max_memory_mb": 200,
+    "cleanup_interval": 3600,
+    "response_time_threshold": 30,
+    "error_threshold": 5
+  }
+}

@@ -8,6 +8,7 @@ import sys
 import os
 import argparse
 import logging
+import threading
 from pathlib import Path
 from datetime import datetime
 
@@ -16,6 +17,9 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from app import get_config, get_database, __version__
 from app.config import create_default_config
+from app.checker import run_all_checks
+from app.scheduler import start_scheduler
+from app.dashboard import create_app
 
 
 def setup_logging():
@@ -36,8 +40,10 @@ def setup_logging():
         ]
     )
     
+    # Silence noisy libraries
     logging.getLogger('urllib3').setLevel(logging.WARNING)
     logging.getLogger('requests').setLevel(logging.WARNING)
+    logging.getLogger('apscheduler').setLevel(logging.INFO)
     
     return logging.getLogger(__name__)
 
@@ -61,7 +67,7 @@ def cmd_init(args):
     logger = setup_logging()
     
     try:
-        config_file = args.config or 'config.json'
+        config_file = get_config().config_file
         if not Path(config_file).exists() or args.force:
             if create_default_config(config_file):
                 logger.info(f"Created configuration: {config_file}")
@@ -72,21 +78,24 @@ def cmd_init(args):
         db = get_database()
         if db.initialize():
             logger.info("Database initialized")
-            
-            config = get_config()
+            config = get_config() # Re-read config in case it was just created
             Path(config.get('logging.file')).parent.mkdir(parents=True, exist_ok=True)
-            Path('data').mkdir(exist_ok=True)
+            Path(config.get('database.path')).parent.mkdir(parents=True, exist_ok=True)
             
-            print("✓ URL Monitor initialized")
-            print(f"Config: {config_file}")
-            print(f"Database: {config.get('database.path')}")
-            print("\nNext: python main.py --add-url https://example.com")
+            print("✓ URL Monitor initialized successfully.")
+            print(f"  Config:   {config_file}")
+            print(f"  Database: {config.get('database.path')}")
+            print("\nNext steps:")
+            print("  1. Add a URL: python main.py --add-url https://example.com")
+            print("  2. Run a manual check: python main.py --run-check")
+            print("  3. View status: python main.py --status")
             return 0
         else:
             logger.error("Database initialization failed")
             return 1
             
     except Exception as e:
+        logger.error(f"Initialization error: {e}", exc_info=True)
         print(f"Error: {e}")
         return 1
 
@@ -97,7 +106,7 @@ def cmd_add_url(args):
     
     url = args.url.strip()
     if not validate_url(url):
-        print(f"Invalid URL: {url}")
+        print(f"Error: Invalid URL format provided: {url}")
         return 1
     
     try:
@@ -110,11 +119,11 @@ def cmd_add_url(args):
                 print(f"  Name: {args.name}")
             return 0
         else:
-            print(f"Failed to add URL: {url}")
+            print(f"Failed to add URL. It might already exist.")
             return 1
             
     except Exception as e:
-        logger.error(f"Error adding URL: {e}")
+        logger.error(f"Error adding URL: {e}", exc_info=True)
         print(f"Error: {e}")
         return 1
 
@@ -128,31 +137,25 @@ def cmd_list_urls(args):
         urls = db.list_urls(active_only=args.active_only)
         
         if not urls:
-            print("No URLs configured")
+            print("No URLs have been configured yet.")
             return 0
         
         if args.format == 'JSON':
             import json
-            url_data = [{
-                'id': u.id,
-                'url': u.url,
-                'name': u.name,
-                'active': u.is_active,
-                'timeout': u.timeout
-            } for u in urls]
+            url_data = [{'id': u.id, 'url': u.url, 'name': u.name, 'active': u.is_active, 'timeout': u.timeout} for u in urls]
             print(json.dumps(url_data, indent=2))
         else:
-            print(f"\n{'Active' if args.active_only else 'All'} URLs:")
-            print("-" * 70)
+            print(f"\n--- {'Active' if args.active_only else 'All'} Monitored URLs ---")
             for url in urls:
-                status = "✓" if url.is_active else "✗"
+                status = "✓ Active" if url.is_active else "✗ Inactive"
                 name = f" ({url.name})" if url.name else ""
-                print(f"[{url.id}] {status} {url.url}{name}")
-            print(f"\nTotal: {len(urls)}")
+                print(f"[{url.id: >3}] {status:<10} | {url.url}{name}")
+            print(f"--------------------------\nTotal: {len(urls)}")
         
         return 0
         
     except Exception as e:
+        logger.error(f"Error listing URLs: {e}", exc_info=True)
         print(f"Error: {e}")
         return 1
 
@@ -167,8 +170,12 @@ def cmd_remove_url(args):
         
         try:
             url_id = int(url_input)
-            success = db.delete_url(url_id)
-            identifier = f"ID {url_id}"
+            url_record = db.get_url(url_id)
+            if url_record:
+                success = db.delete_url(url_id)
+                identifier = f"ID {url_id} ({url_record.url})"
+            else:
+                success = False
         except ValueError:
             success = db.delete_url_by_address(url_input)
             identifier = url_input
@@ -177,11 +184,11 @@ def cmd_remove_url(args):
             print(f"✓ Removed: {identifier}")
             return 0
         else:
-            print(f"Not found: {identifier}")
+            print(f"Error: URL not found: {url_input}")
             return 1
             
     except Exception as e:
-        logger.error(f"Error: {e}")
+        logger.error(f"Error removing URL: {e}", exc_info=True)
         print(f"Error: {e}")
         return 1
 
@@ -195,102 +202,117 @@ def cmd_status(args):
         all_status = db.get_all_status()
         
         if not all_status:
-            print("No URLs configured")
+            print("No URLs configured. Add one with --add-url.")
             return 0
         
         if args.format == 'JSON':
             import json
             print(json.dumps(all_status, indent=2, default=str))
         else:
-            print(f"\nStatus Report - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-            print("=" * 70)
-            
+            print(f"\n--- Status Report - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ---")
             for status in all_status:
                 if not args.show_all and not status.get('is_active'):
                     continue
                 
-                url = status['url'][:50]
+                url = status['url'][:60].ljust(60)
                 if status.get('is_up'):
-                    print(f"✓ UP   {url}")
+                    resp_time = f"{status['response_time']:.2f}ms".rjust(10)
+                    print(f"✓ UP     | {url} | {resp_time}")
                 elif status.get('checked_at'):
-                    print(f"✗ DOWN {url}")
+                    error = (status.get('error_message') or 'Unknown Error')[:20].rjust(20)
+                    print(f"✗ DOWN   | {url} | {error}")
                 else:
-                    print(f"? PEND {url}")
-            
-            print("=" * 70)
+                    print(f"? PEND   | {url} | {'Not checked yet'.rjust(20)}")
+            print("--------------------------------------------------")
         
         return 0
         
     except Exception as e:
+        logger.error(f"Error getting status: {e}", exc_info=True)
         print(f"Error: {e}")
         return 1
 
-
-def cmd_verify_db(args):
-    """Verify database"""
-    setup_logging()
-    
-    try:
-        db = get_database()
-        stats = db.get_database_stats()
-        
-        print("\nDatabase Stats:")
-        print(f"  URLs: {stats.get('total_urls', 0)} total, {stats.get('active_urls', 0)} active")
-        print(f"  Checks: {stats.get('total_checks', 0)} total")
-        print(f"  Size: {stats.get('db_file_size', 0):,} bytes")
-        print("\n✓ Database OK")
-        return 0
-        
-    except Exception as e:
-        print(f"Error: {e}")
-        return 1
-
+def cmd_run_check(args):
+    """Manually trigger a check of all active URLs"""
+    logger = setup_logging()
+    print("Starting manual check of all active URLs...")
+    checked_count = run_all_checks()
+    print(f"✓ Check complete. {checked_count} URLs were processed.")
+    return 0
 
 def main():
     """Main entry point"""
-    parser = argparse.ArgumentParser(description="URL Monitor")
+    parser = argparse.ArgumentParser(description=f"URL Monitor v{__version__}")
     
-    parser.add_argument('--config', help='Config file path')
-    parser.add_argument('--version', action='store_true', help='Show version')
+    # Global options
+    parser.add_argument('--config', help='Path to custom config file')
+    parser.add_argument('--version', action='version', version=f"URL Monitor v{__version__}")
     
-    parser.add_argument('--init', action='store_true', help='Initialize')
-    parser.add_argument('--force', action='store_true', help='Force init')
-    parser.add_argument('--add-url', metavar='URL', help='Add URL')
-    parser.add_argument('--name', help='URL name')
-    parser.add_argument('--timeout', type=int, default=10, help='Timeout')
-    parser.add_argument('--active', action='store_true', default=True)
-    parser.add_argument('--list-urls', action='store_true', help='List URLs')
-    parser.add_argument('--active-only', action='store_true', help='Active only')
-    parser.add_argument('--remove-url', metavar='URL', help='Remove URL')
-    parser.add_argument('--status', action='store_true', help='Show status')
-    parser.add_argument('--verify-db', action='store_true', help='Verify DB')
-    parser.add_argument('--format', choices=['TABLE', 'JSON'], default='TABLE')
-    parser.add_argument('--show-all', action='store_true', help='Show all')
+    # Sub-commands (emulated with argument groups)
+    action_group = parser.add_argument_group('actions')
+    action_group.add_argument('--init', action='store_true', help='Initialize config and database')
+    action_group.add_argument('--force', action='store_true', help='Force re-initialization, overwriting existing config')
     
+    action_group.add_argument('--add-url', metavar='URL', help='Add a new URL to monitor')
+    action_group.add_argument('--list-urls', action='store_true', help='List all monitored URLs')
+    action_group.add_argument('--remove-url', metavar='ID_OR_URL', help='Remove a URL by its ID or full address')
+    
+    action_group.add_argument('--status', action='store_true', help='Show the current status of all URLs')
+    action_group.add_argument('--run-check', action='store_true', help='Run a manual check cycle on all active URLs')
+    action_group.add_argument('--schedule', action='store_true', help='Start the scheduler to run checks automatically (blocking)')
+    action_group.add_argument('--dashboard', action='store_true', help='Start the web dashboard (blocking)')
+
+    # Options for adding/modifying URLs
+    add_url_group = parser.add_argument_group('url options')
+    add_url_group.add_argument('--name', help='A friendly name for the URL')
+    add_url_group.add_argument('--timeout', type=int, default=10, help='Request timeout in seconds (default: 10)')
+    add_url_group.add_argument('--active', action='store_true', default=True, help='Set the URL as active (default)')
+    
+    # Options for listing/status
+    display_group = parser.add_argument_group('display options')
+    display_group.add_argument('--active-only', action='store_true', help='Show only active URLs when listing')
+    display_group.add_argument('--show-all', action='store_true', help='Show inactive URLs in status report')
+    display_group.add_argument('--format', choices=['TABLE', 'JSON'], default='TABLE', help='Output format for lists and status')
+
     args = parser.parse_args()
     
-    if args.version:
-        print(f"URL Monitor v{__version__}")
+    # Handle combined dashboard and schedule command
+    if args.dashboard and args.schedule:
+        setup_logging()
+        logging.info("Starting dashboard and scheduler in combined mode.")
+        scheduler_thread = threading.Thread(target=start_scheduler, daemon=True)
+        scheduler_thread.start()
+        
+        app = create_app()
+        config = get_config()
+        app.run(host=config.get('dashboard.host'), port=config.get('dashboard.port'))
         return 0
-    
-    if args.init:
-        return cmd_init(args)
-    elif args.add_url:
+
+    # Handle single action commands
+    if args.init: return cmd_init(args)
+    if args.add_url:
         args.url = args.add_url
         return cmd_add_url(args)
-    elif args.list_urls:
-        return cmd_list_urls(args)
-    elif args.remove_url:
+    if args.list_urls: return cmd_list_urls(args)
+    if args.remove_url:
         args.url = args.remove_url
         return cmd_remove_url(args)
-    elif args.status:
-        return cmd_status(args)
-    elif args.verify_db:
-        return cmd_verify_db(args)
-    else:
-        parser.print_help()
+    if args.status: return cmd_status(args)
+    if args.run_check: return cmd_run_check(args)
+    if args.schedule:
+        setup_logging()
+        return start_scheduler()
+    if args.dashboard:
+        setup_logging()
+        app = create_app()
+        config = get_config()
+        app.run(host=config.get('dashboard.host'), port=config.get('dashboard.port'), debug=config.get('dashboard.debug'))
         return 0
 
+    parser.print_help()
+    return 0
 
 if __name__ == '__main__':
+    # Ensure we are in the project root directory
+    os.chdir(Path(__file__).parent.resolve())
     sys.exit(main())
