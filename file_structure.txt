@@ -1,33 +1,33 @@
-.
-├── README.md
-├── Tech_Stack_Documentation.md
-├── Url_Checker_Documentation.md
-├── app
-│   ├── checker.py
-│   ├── config.py
-│   ├── dashboard.py
-│   ├── database.py
-│   ├── init.py
-│   └── scheduler.py
-├── config.json
-├── data
-│   └── monitor.db
-├── file_structure.txt
-├── logs
-│   └── monitor.log
-├── main.py
-├── requirements.txt
-├── static
-│   ├── app.js
-│   └── style.css
-├── templates
-│   ├── base.html
-│   ├── history.html
-│   └── index.html
-└── tests
-    ├── __init__.py
-    ├── test_checker.py
-    ├── test_config.py
-    └── test_database.py
+[4.0K]  .
+├── [9.5K]  README.md
+├── [ 13K]  Tech_Stack_Documentation.md
+├── [ 33K]  Url_Checker_Documentation.md
+├── [4.0K]  app
+│   ├── [4.0K]  checker.py
+│   ├── [7.6K]  config.py
+│   ├── [2.6K]  dashboard.py
+│   ├── [ 21K]  database.py
+│   ├── [ 514]  init.py
+│   └── [2.0K]  scheduler.py
+├── [1.2K]  config.json
+├── [4.0K]  data
+│   └── [   0]  monitor.db
+├── [   0]  file_structure.txt
+├── [4.0K]  logs
+│   └── [   0]  monitor.log
+├── [ 11K]  main.py
+├── [ 133]  requirements.txt
+├── [4.0K]  static
+│   ├── [ 368]  app.js
+│   └── [2.3K]  style.css
+├── [4.0K]  templates
+│   ├── [ 687]  base.html
+│   ├── [2.1K]  history.html
+│   └── [2.9K]  index.html
+└── [4.0K]  tests
+    ├── [   0]  __init__.py
+    ├── [2.3K]  test_checker.py
+    ├── [2.3K]  test_config.py
+    └── [3.3K]  test_database.py
 
 7 directories, 24 files
