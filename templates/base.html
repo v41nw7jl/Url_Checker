@@ -1,0 +1,24 @@
+<!-- FILE: templates/base.html -->
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>URL Monitor Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>URL Monitor</h1>
+            <p>A lightweight monitoring dashboard</p>
+        </header>
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+        <footer>
+            <p>URL Monitor v1.0.0 | Last updated: {{ "now" | datetimeformat }} UTC</p>
+        </footer>
+    </div>
+</body>
+</html>

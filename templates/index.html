@@ -1,0 +1,88 @@
+<!-- FILE: templates/index.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div class="summary-cards">
+    <div class="card">
+        <h2>Total Monitored</h2>
+        <p>{{ stats.total }}</p>
+    </div>
+    <div class="card card-up">
+        <h2>Up</h2>
+        <p>{{ stats.up }}</p>
+    </div>
+    <div class="card card-down">
+        <h2>Down</h2>
+        <p>{{ stats.down }}</p>
+    </div>
+    <div class="card card-pending">
+        <h2>Pending</h2>
+        <p>{{ stats.pending }}</p>
+    </div>
+</div>
+
+<div class="status-table">
+    <h2>Current Status</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Status</th>
+                <th>URL</th>
+                <th>Response Time</th>
+                <th>Last Checked</th>
+                <th>Details</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if statuses %}
+                {% for s in statuses %}
+                <tr class="status-row-{{ 'up' if s.is_up else 'down' if s.checked_at else 'pending' }}">
+                    <td>
+                        {% if s.checked_at %}
+                            {% if s.is_up %}
+                                <span class="status-icon status-up">✓</span> Up
+                            {% else %}
+                                <span class="status-icon status-down">✗</span> Down
+                            {% endif %}
+                        {% else %}
+                            <span class="status-icon status-pending">?</span> Pending
+                        {% endif %}
+                    </td>
+                    <td class="url-cell">
+                        <a href="{{ s.url }}" target="_blank" rel="noopener noreferrer">{{ s.url }}</a>
+                        {% if s.name %}<span class="url-name">({{ s.name }})</span>{% endif %}
+                    </td>
+                    <td>
+                        {% if s.response_time is not none %}
+                            {{ "%.2fms" | format(s.response_time) }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if s.checked_at %}
+                            {{ s.checked_at | datetimeformat }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if s.error_message %}
+                            {{ s.error_message }}
+                        {% elif s.status_code %}
+                            HTTP {{ s.status_code }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="5">No URLs are being monitored. Use the CLI to add one.</td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

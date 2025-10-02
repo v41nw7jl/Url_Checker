@@ -1,0 +1,33 @@
+.
+├── README.md
+├── Tech_Stack_Documentation.md
+├── Url_Checker_Documentation.md
+├── app
+│   ├── checker.py
+│   ├── config.py
+│   ├── dashboard.py
+│   ├── database.py
+│   ├── init.py
+│   └── scheduler.py
+├── config.json
+├── data
+│   └── monitor.db
+├── file_structure.txt
+├── logs
+│   └── monitor.log
+├── main.py
+├── requirements.txt
+├── static
+│   ├── app.js
+│   └── style.css
+├── templates
+│   ├── base.html
+│   ├── history.html
+│   └── index.html
+└── tests
+    ├── __init__.py
+    ├── test_checker.py
+    ├── test_config.py
+    └── test_database.py
+
+7 directories, 24 files
